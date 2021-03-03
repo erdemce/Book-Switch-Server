@@ -44,7 +44,7 @@ router.post('/signup', (req, res) => {
       .catch((err) => {
         if (err.code === 11000) {
           res.status(500).json({
-            errorMessage: 'email entered already exists!',
+            errorMessage: 'Email entered already exist!',
             message: err,
           });
         } 
@@ -57,7 +57,7 @@ router.post('/signup', (req, res) => {
       })
 });
 
-router.post('/signin', (req, res) => {
+router.post('/login', (req, res) => {
     const {email, password } = req.body;
     
     if ( !email || !password) {
