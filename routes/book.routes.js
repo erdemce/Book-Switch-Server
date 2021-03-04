@@ -1,17 +1,50 @@
 const express = require('express')
 const router = express.Router()
-const bcrypt = require('bcryptjs');
 
 const BookModel = require('../models/Book.model');
 
-router.post('/add', (req, res) => {
+const isUserBook=(req,res,next)=>{
+  let user = req.session.userData
+  let id = req.params.id;
+
+  Book.Model.findById(id)
+    .then((book) => {
+      if(book.owner=user._id){
+        next()
+      }
+      else {
+        res.status(401).json({
+            message: 'Unauthorized user',
+        })}
+    })
+    .catch((err) => {
+      res.status(500).json({
+        errorMessage: 'Something went wrong!',
+      });
+    })
+}
+
+const isLoggedIn = (req, res, next) => {  
+  if (req.session.loggedInUser) {
+      next()
+  }
+  else {
+      res.status(401).json({
+          message: 'Unauthorized user',
+          code: 401,
+      })
+  };
+};
+
+router.post('/add',isLoggedIn, (req, res) => {
     const {title, author, language, description,photo,category} = req.body;
     const user = req.session.loggedInUser;
     
     if (!title || !author || !language || !description ||category) {
         res.status(500)
           .json({
-            errorMessage: 'Please fill all the required fields'
+            errorMessage: 'Please fill all the required fields',
+            body:request.body
           });
         return;  
     }
@@ -27,79 +60,69 @@ router.post('/add', (req, res) => {
         })
 });
 
-router.post('/signin', (req, res) => {
-    const {email, password } = req.body;
-    
-    if ( !email || !password) {
-        res.status(500).json({
-            error: 'Please enter your email and password',
-       })
-      return;  
-    }
-    const myRegex = new RegExp(/^[a-z0-9](?!.*?[^\na-z0-9]{2})[^\s@]+@[^\s@]+\.[^\s@]+[a-z0-9]$/);
-    if (!myRegex.test(email)) {
-        res.status(500).json({
-            error: 'Email format not correct',
-        })
-        return;  
-    }
-    
-    UserModel.findOne({email})
-      .then((userData) => {
-           
-          bcrypt.compare(password, userData.passwordHash)
-            .then((doesItMatch) => {
-                
-                if (doesItMatch) {
-                  
-                  userData.passwordHash = "***";
-                  req.session.loggedInUser = userData;
-                  res.status(200).json(userData)
-                }
-                
-                else {
-                    res.status(500).json({
-                        error: 'Password doesn\'t match',
-                    })
-                  return; 
-                }
-            })
-            .catch(() => {
-                res.status(500).json({
-                    error: 'Email format not correct',
-                })
-              return; 
-            });
-      })
-      .catch((err) => {
-        res.status(500).json({
-            error: 'Email does not exist',
-            message: err
-        })
-        return;  
+router.post('/edit/:id',isLoggedIn,isUserBook, (req, res) => {
+
+  let user = req.session.userData
+  let bookId = req.params.id;
+
+  const {title, author, language, description,photo,category} = req.body;
+  if (!title || !author || !language || !description ||category) {
+    res.status(500)
+      .json({
+        errorMessage: 'Please fill all the required fields',
+        body:request.body
       });
-  
-});
- 
-router.post('/logout', (req, res) => {
-    req.session.destroy();
-    res.status(204).json({});
+    return;  
+}
+  let updatedBook= {
+    title, author, language, description,photo,category,
+    owner: user._id,
+  }
+  BookModel.findByIdAndUpdate(bookId, updatedBook)
+    .then((bookData) => {
+      res.status(200).json(bookData)
+    })
+    .catch(() => {
+      res.render('not-authorised.hbs')
+    })
 })
 
-const isLoggedIn = (req, res, next) => {  
-  if (req.session.loggedInUser) {
-      next()
-  }
-  else {
-      res.status(401).json({
-          message: 'Unauthorized user',
-          code: 401,
-      })
-  };
-};
-
-router.get("/book/:id", (req, res, next) => {
-  
+router.get("/:id", (req, res, next) => {
+  let bookId=req.params.id;
+  BookModel.findById(bookId)
+    .then((book) => {
+      res.status(200).json(book) 
+    })
+    .catch((err) => {
+      res.status(500).json({
+        errorMessage: 'Something went wrong!',
+      });
+    })
 });
+
+router.get('/', (req, res, next) => {
+  BookModel.find()
+    .then((allBooks) => {
+      res.status(200).json(allBooks) 
+    })
+    .catch((err) => {
+      res.status(500).json({
+        errorMessage: 'Something went wrong!',
+      });
+    })
+});
+
+router.get('/delete/:id',isLoggedIn,isUserBook, (req, res, next) => {
+  let bookId = req.params.id;
+  BookModel.findByIdAndRemove(bookId)
+    .then((bookData) => {
+      res.status(200).json({message: Success})
+    })
+    .catch((err) => {
+      res.status(500).json({
+        errorMessage: 'Something went wrong!',
+      });
+    })
+})
 
 module.exports = router;

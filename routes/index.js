@@ -7,11 +7,11 @@ router.get("/", (req, res, next) => {
 // You put the next routes here 👇
 // example: router.use("/auth", authRoutes)
 
-const bookRoutes = require('./routes/book.routes');
-router.use('/api/auth', bookRoutes);
+const bookRoutes = require('./book.routes');
+router.use('/book', bookRoutes);
 
 const authRoutes = require("./auth.routes");
-router.use("/book", authRoutes);
+router.use("/auth", authRoutes);
 
 // const cloudinaryRoutes = require("./routes/cloudinary.routes");
 // router.use("/api", cloudinaryRoutes);
