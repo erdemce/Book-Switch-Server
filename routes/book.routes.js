@@ -102,6 +102,11 @@ router.get("/:id", (req, res, next) => {
 
 router.get('/', (req, res, next) => {
   BookModel.find()
+  .populate({
+    path: 'owner',
+    model:"user",
+    select: "username city"
+  })
     .then((allBooks) => {
       res.status(200).json(allBooks) 
     })
