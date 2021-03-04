@@ -26,6 +26,21 @@ module.exports = (app) => {
       origin: process.env.ORIGIN || "http://localhost:3000",
     })
   );
+  const session = require('express-session');
+const MongoStore = require('connect-mongo').default;
+
+app.use(session({
+    secret: 'bookswitch',
+    saveUninitialized: false, 
+    resave: false, 
+    cookie: {
+      maxAge: 1000*60*60*24*7// is in milliseconds.  expiring in 1 day
+    },
+    store: new MongoStore({
+      mongoUrl: process.env.MONGODB_URI || "mongodb://localhost/bookSwitch",
+      ttl: 60*60*24*7, // is in seconds. expiring in 1 day
+    })
+}));
 
   // In development environment the app logs
   app.use(logger("dev"));
