@@ -1,3 +1,4 @@
+
 const express = require('express')
 const router = express.Router()
 
@@ -87,9 +88,32 @@ router.post('/edit/:id',isLoggedIn,isUserBook, (req, res) => {
     })
 })
 
-router.get("/:id", (req, res, next) => {
+router.get("/get/:id", (req, res, next) => {
   let bookId=req.params.id;
-  BookModel.findById(bookId)
+
+  if(bookId==="random"){
+    BookModel.find()
+  .populate({
+    path: 'owner',
+    model:"user",
+    select: "username location"
+  })
+    .then((allBooks) => {
+      let index=Math.floor(Math.random()*allBooks.length)
+      res.status(200).json(allBooks[index]) 
+
+    })
+      
+    .catch((err) => {
+      
+      });
+    }else{
+      BookModel.findById(bookId)
+  .populate({
+    path: 'owner',
+    model:"user",
+    select: "username location"
+  })
     .then((book) => {
       res.status(200).json(book) 
     })
@@ -98,14 +122,23 @@ router.get("/:id", (req, res, next) => {
         errorMessage: 'Something went wrong!',
       });
     })
-});
+
+    }
+    
+  
+  
+
+  
+  
+  })
+
 
 router.get('/', (req, res, next) => {
   BookModel.find()
   .populate({
     path: 'owner',
     model:"user",
-    select: "username city"
+    select: "username location"
   })
     .then((allBooks) => {
       res.status(200).json(allBooks) 
@@ -129,9 +162,5 @@ router.get('/delete/:id',isLoggedIn,isUserBook, (req, res, next) => {
       });
     })
 })
-
-router.get("/user", isLoggedIn, (req, res, next) => {
-  res.status(200).json(req.session.loggedInUser);
-});
 
 module.exports = router;

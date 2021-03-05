@@ -29,11 +29,12 @@ const userSchema = new Schema({
     type: String,
     default: defaultProfileImg,
   },
-  city: {
+  
+  location: {
     type: String,
-    ENUM: ['Amsterdam', 'Augsburg', 'Berlin', 'Frankfurt', 'Ljubljana', 'Madrid', 'Munich', 'Paris', 'Versailles'],
     require: true
   }
+
 });
 
 const UserModel = new model("user", userSchema);

@@ -1,40 +1,40 @@
+
 const express = require('express')
 const router = express.Router()
 const bcrypt = require('bcryptjs');
 
+
 const UserModel = require('../models/User.model');
 
 router.post('/signup', (req, res) => {
-    const {username, email, password,city} = req.body;
+    const {username, name, lastName, email, password,location} = req.body;
  
     
-    if (!username || !email || !password || !city) {
+    if (!username || !email || !password || !location) {
         res.status(500)
           .json({
-            errorMessage: 'Please enter username, email, city and password'
+            errorMessage: 'Please enter username, email, city and password',
           });
         return;  
     }
     const myRegex = new RegExp(/^[a-z0-9](?!.*?[^\na-z0-9]{2})[^\s@]+@[^\s@]+\.[^\s@]+[a-z0-9]$/);
     if (!myRegex.test(email)) {
         res.status(500).json({
-          errorMessage: 'Email format not correct'
+          errorMessage: 'Email format not correct',
         });
         return;  
     }
     const myPassRegex = new RegExp(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/);
     if (!myPassRegex.test(password)) {
       res.status(500).json({
-        errorMessage: 'Password needs to have 8 characters, a number and an Uppercase alphabet'
+        errorMessage: 'Password needs to have 8 characters, a number and an Uppercase alphabet'          
       });
       return;  
     }
-    
-
   
     let salt = bcrypt.genSaltSync(10);
     let hash = bcrypt.hashSync(password, salt);
-    UserModel.create({username, email, city, passwordHash: hash})
+    UserModel.create({username, email, location:location.city, name,lastName, passwordHash: hash})
       .then((userData) => {
         
         userData.passwordHash = "***";
@@ -131,5 +131,6 @@ const isLoggedIn = (req, res, next) => {
 router.get("/user", isLoggedIn, (req, res, next) => {
   res.status(200).json(req.session.loggedInUser);
 });
+
 
 module.exports = router;
