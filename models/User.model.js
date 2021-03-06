@@ -31,7 +31,8 @@ const userSchema = new Schema({
   },
   
   location: {
-    type: String,
+    type: Schema.Types.ObjectId,
+    ref: "location",
     require: true
   }
 
