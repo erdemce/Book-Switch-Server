@@ -5,6 +5,7 @@ const bcrypt = require('bcryptjs');
 
 
 const UserModel = require('../models/User.model');
+const LocationModel = require('../models/Location.Model');
 
 router.post('/signup', (req, res) => {
     const {username, name, lastName, email, password,location} = req.body;
@@ -34,7 +35,7 @@ router.post('/signup', (req, res) => {
   
     let salt = bcrypt.genSaltSync(10);
     let hash = bcrypt.hashSync(password, salt);
-    UserModel.create({username, email, location:location.city, name,lastName, passwordHash: hash})
+    UserModel.create({username, email, location, name,lastName, passwordHash: hash})
       .then((userData) => {
         
         userData.passwordHash = "***";
@@ -43,20 +44,19 @@ router.post('/signup', (req, res) => {
       })
       .catch((err) => {
         if (err.code === 11000) {
-          res.status(500).json({
+          res.status(501).json({
             errorMessage: 'Email entered already exist!',
             message: err,
           });
         } 
         else {
-          res.status(500).json({
+          res.status(502).json({
             errorMessage: 'Something went wrong!',
             message: err,
           });
         }
       })
-});
-
+    })
 router.post('/login', (req, res) => {
     const {email, password } = req.body;
     
@@ -129,8 +129,22 @@ const isLoggedIn = (req, res, next) => {
 };
 
 router.get("/user", isLoggedIn, (req, res, next) => {
-  res.status(200).json(req.session.loggedInUser);
+  const id=req.session.loggedInUser._id;
+  UserModel.findById(id)
+  .populate({
+    path: 'location',
+    model:"location",
+  })
+  .then((user)=>{
+    res.status(200).json(user);
+  })
+  .catch((err)=>{
+    res.status(401).json({
+      message: 'Unauthorized user',
+      code: 401,
+  })
 });
+})
 
 
 module.exports = router;

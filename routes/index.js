@@ -13,6 +13,9 @@ router.use('/book', bookRoutes);
 const authRoutes = require("./auth.routes");
 router.use("/auth", authRoutes);
 
+const locationRoutes = require("./location.routes");
+router.use("/location", locationRoutes);
+
 // const cloudinaryRoutes = require("./routes/cloudinary.routes");
 // router.use("/api", cloudinaryRoutes);
 
