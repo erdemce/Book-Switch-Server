@@ -71,8 +71,8 @@ router.get('/', isLoggedIn, (req, res, next) => {
     })
   })
 
-router.get('/:userId', isLoggedIn, (req, res, next) => {
-  let contactId = req.params.userId;
+router.get('/:contactId', isLoggedIn, (req, res, next) => {
+  let contactId = req.params.contactId;
   let user = req.session.loggedInUser;
   MessageModel.find({
       $and: [{
