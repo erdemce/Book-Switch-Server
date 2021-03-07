@@ -3,8 +3,6 @@ const router = express.Router();
 const MessageModel = require('../models/Message.model');
 const mongoose = require('mongoose');
 
-
-
 const isLoggedIn = (req, res, next) => {  
   if (req.session.loggedInUser) {
       next()
