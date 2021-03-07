@@ -5,7 +5,7 @@ const router = express.Router()
 const BookModel = require('../models/Book.model');
 
 const isUserBook=(req,res,next)=>{
-  let user = req.session.userData
+  let user = req.session.loggedInUser
   let id = req.params.id;
 
   Book.Model.findById(id)
@@ -122,14 +122,7 @@ router.get("/get/:id", (req, res, next) => {
         errorMessage: 'Something went wrong!',
       });
     })
-
     }
-    
-  
-  
-
-  
-  
   })
 
 

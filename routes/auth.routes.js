@@ -129,21 +129,23 @@ const isLoggedIn = (req, res, next) => {
 };
 
 router.get("/user", isLoggedIn, (req, res, next) => {
-  const id=req.session.loggedInUser._id;
-  UserModel.findById(id)
-  .populate({
-    path: 'location',
-    model:"location",
-  })
-  .then((user)=>{
-    res.status(200).json(user);
-  })
-  .catch((err)=>{
-    res.status(401).json({
-      message: 'Unauthorized user',
-      code: 401,
-  })
-});
+
+  res.status(200).json(req.session.loggedInUser);
+//   const id=req.session.loggedInUser._id;
+//   UserModel.findById(id)
+//   .populate({
+//     path: 'location',
+//     model:"location",
+//   })
+//   .then((user)=>{
+//     res.status(200).json(user);
+//   })
+//   .catch((err)=>{
+//     res.status(401).json({
+//       message: 'Unauthorized user',
+//       code: 401,
+//   })
+// });
 })
 
 

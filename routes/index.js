@@ -16,6 +16,9 @@ router.use("/auth", authRoutes);
 const locationRoutes = require("./location.routes");
 router.use("/location", locationRoutes);
 
+const messageRoutes = require("./message.routes");
+router.use("/message", messageRoutes);
+
 // const cloudinaryRoutes = require("./routes/cloudinary.routes");
 // router.use("/api", cloudinaryRoutes);
 

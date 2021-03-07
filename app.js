@@ -15,7 +15,7 @@ const session = require('express-session');
 const MongoStore = require('connect-mongo').default;
 
 app.use(session({
-    secret: 'GESB',
+    secret: 'bookswitch',
     saveUninitialized: false, 
     resave: false, 
     cookie: {
