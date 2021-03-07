@@ -18,26 +18,17 @@ const isLoggedIn = (req, res, next) => {
 router.post('/', isLoggedIn, (req, res, next) => {
   
   const {
-    text, contactId, bookId
+    text, bookRelated, between
   } = req.body;
-  let sender = req.session.loggedInUser
-  let between = [sender._id, contactId]
+  
   let message = {
     between,
     text,
-    bookRelated: bookId
+    bookRelated
   }
   MessageModel.create(message)
-    .populate({
-      path: 'bookRelated',
-      model: 'book'
-    })
-    .populate({
-      path: 'between',
-      model: 'user',
-    })
-    .then((messsage) => {
-        res.status(200).json(messsage)
+    .then((message) => {
+        res.status(200).json(message)
       })
       .catch(() => {
         res.status(500).json({
