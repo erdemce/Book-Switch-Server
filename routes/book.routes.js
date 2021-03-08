@@ -153,7 +153,10 @@ router.get('/user/:id', (req, res, next) => {
   .populate({
     path: 'owner',
     model:"user",
-    select: "username location"
+    select: "username location",
+    populate: {
+      path: 'location',
+      model:"location"}
   })
     .then((allBooks) => {
       res.status(200).json(allBooks) 
