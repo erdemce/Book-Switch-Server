@@ -95,8 +95,12 @@ router.get("/get/:id", (req, res, next) => {
     BookModel.find()
   .populate({
     path: 'owner',
-    model:"user",
-    select: "username location"
+    populate: {
+      path: "owner.location",
+      model:"location"
+      
+    }
+  
   })
     .then((allBooks) => {
       let index=Math.floor(Math.random()*allBooks.length)
@@ -128,6 +132,24 @@ router.get("/get/:id", (req, res, next) => {
 
 router.get('/', (req, res, next) => {
   BookModel.find()
+  .populate({
+    path: 'owner',
+    model:"user",
+    select: "username location"
+  })
+    .then((allBooks) => {
+      res.status(200).json(allBooks) 
+    })
+    .catch((err) => {
+      res.status(500).json({
+        errorMessage: 'Something went wrong!',
+      });
+    })
+});
+
+router.get('/user/:id', (req, res, next) => {
+  let userId=req.params.id;
+  BookModel.find({owner:userId})
   .populate({
     path: 'owner',
     model:"user",
