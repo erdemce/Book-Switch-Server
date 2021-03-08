@@ -38,10 +38,10 @@ const isLoggedIn = (req, res, next) => {
 };
 
 router.post('/add',isLoggedIn, (req, res) => {
-    const {title, author, language, description,photo,category} = req.body;
+    const {title, author, language, description,photo,category,switchMode} = req.body;
     const user = req.session.loggedInUser;
     
-    if (!title || !author || !language || !description ||category) {
+    if (!title || !author || !language || !description ||!category||!switchMode) {
         res.status(500)
           .json({
             errorMessage: 'Please fill all the required fields',
@@ -50,7 +50,7 @@ router.post('/add',isLoggedIn, (req, res) => {
         return;  
     }
   
-    BookModel.create({title, author, language, description,photo,category, owner:user._id})
+    BookModel.create({title, author, language, description,photo,switchMode,category, owner:user._id})
       .then((bookData) => {
         res.status(200).json(bookData)
       })
@@ -66,8 +66,8 @@ router.post('/edit/:id',isLoggedIn,isUserBook, (req, res) => {
   let user = req.session.userData
   let bookId = req.params.id;
 
-  const {title, author, language, description,photo,category} = req.body;
-  if (!title || !author || !language || !description ||category) {
+  const {title, author, language, description,photo,category,switchMode} = req.body;
+  if (!title || !author || !language || !description ||!category||!switchMode) {
     res.status(500)
       .json({
         errorMessage: 'Please fill all the required fields',
@@ -76,7 +76,7 @@ router.post('/edit/:id',isLoggedIn,isUserBook, (req, res) => {
     return;  
 }
   let updatedBook= {
-    title, author, language, description,photo,category,
+    title, author, language, description,photo,category,switchMode,
     owner: user._id,
   }
   BookModel.findByIdAndUpdate(bookId, updatedBook)
