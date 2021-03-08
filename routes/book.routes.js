@@ -8,7 +8,7 @@ const isUserBook=(req,res,next)=>{
   let user = req.session.loggedInUser
   let id = req.params.id;
 
-  Book.Model.findById(id)
+  BookModel.findById(id)
     .then((book) => {
       if(book.owner=user._id){
         next()
@@ -32,7 +32,7 @@ const isLoggedIn = (req, res, next) => {
   else {
       res.status(401).json({
           message: 'Unauthorized user',
-          code: 401,
+          code: 4091,
       })
   };
 };
@@ -52,7 +52,17 @@ router.post('/add',isLoggedIn, (req, res) => {
   
     BookModel.create({title, author, language, description,photo,switchMode,category, owner:user._id})
       .then((bookData) => {
-        res.status(200).json(bookData)
+        BookModel.findById(bookData._id)
+        .populate({
+          path: 'owner',
+          populate: {
+            path: "owner.location",
+            model:"location"
+            
+          }})
+        .then((populatedBook)=>{
+          res.status(200).json(populatedBook)
+        })
       })
       .catch((err) => {
           res.status(500).json({
@@ -63,10 +73,11 @@ router.post('/add',isLoggedIn, (req, res) => {
 
 router.post('/edit/:id',isLoggedIn,isUserBook, (req, res) => {
 
-  let user = req.session.userData
+  let user = req.session.loggedInUser
   let bookId = req.params.id;
+  console.log(req.body)
 
-  const {title, author, language, description,photo,category,switchMode} = req.body;
+  const {title, author, language, description,category,switchMode} = req.body;
   if (!title || !author || !language || !description ||!category||!switchMode) {
     res.status(500)
       .json({
@@ -76,7 +87,7 @@ router.post('/edit/:id',isLoggedIn,isUserBook, (req, res) => {
     return;  
 }
   let updatedBook= {
-    title, author, language, description,photo,category,switchMode,
+    title, author, language, description,category,switchMode,
     owner: user._id,
   }
   BookModel.findByIdAndUpdate(bookId, updatedBook)
@@ -168,7 +179,7 @@ router.get('/user/:id', (req, res, next) => {
     })
 });
 
-router.get('/delete/:id',isLoggedIn,isUserBook, (req, res, next) => {
+router.delete('/delete/:id',isLoggedIn,isUserBook, (req, res, next) => {
   let bookId = req.params.id;
   BookModel.findByIdAndRemove(bookId)
     .then((bookData) => {
