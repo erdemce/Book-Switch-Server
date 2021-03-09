@@ -56,6 +56,8 @@ const bookSchema = new Schema({
       "Poetry",
       "Self-help",
       "True Crime",
+      "Children",
+      "Education"
     ],
     require: true,
   },
