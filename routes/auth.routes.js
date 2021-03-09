@@ -138,5 +138,41 @@ router.get("/user", isLoggedIn, (req, res, next) => {
 
 })
 
+router.post('/user',isLoggedIn , (req, res) => {
+
+
+  let user = req.session.loggedInUser
+
+  console.log(req.body)
+
+  const {username, name, lastName, location, _id} = req.body;
+
+  if(user._id!==_id){
+    res.status(401).json({
+      message: 'Unauthorized user',
+      code: 401,
+  })
+
+  }
+  if (!username||!location) {
+    res.status(500)
+      .json({
+        errorMessage: 'Please fill all the required fields',
+        body:request.body
+      });
+    return;  
+}
+  let updatedUser= {username,name,lastName,location}
+  UserModel.findByIdAndUpdate(_id, updatedUser)
+  // Model.findByIdAndUpdate(id, { name: 'jason bourne' }
+    .then((savedUser) => {
+      savedUser.passwordHash = "***";
+      req.session.loggedInUser = savedUser;
+      res.status(200).json(savedUser)
+    })
+    .catch(() => {
+      res.render('not-authorised.hbs')
+    })
+})
 
 module.exports = router;
