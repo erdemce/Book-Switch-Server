@@ -182,12 +182,13 @@ router.get('/user/:id', (req, res, next) => {
 router.delete('/delete/:id',isLoggedIn,isUserBook, (req, res, next) => {
   let bookId = req.params.id;
   BookModel.findByIdAndRemove(bookId)
-    .then((bookData) => {
-      res.status(200).json({message: Success})
+    .then((book) => {
+      res.status(200).json(book)
     })
     .catch((err) => {
       res.status(500).json({
         errorMessage: 'Something went wrong!',
+        err
       });
     })
 })
