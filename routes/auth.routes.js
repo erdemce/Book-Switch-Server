@@ -38,6 +38,7 @@ router.post('/signup', (req, res) => {
     UserModel.create({username, email, location, name,lastName, passwordHash: hash})
       .then((userData) => {
         
+        
         userData.passwordHash = "***";
         req.session.loggedInUser = userData;
         res.status(200).json(userData)
@@ -163,8 +164,12 @@ router.post('/user',isLoggedIn , (req, res) => {
     return;  
 }
   let updatedUser= {username,name,lastName,location}
-  UserModel.findByIdAndUpdate(_id, updatedUser)
-  // Model.findByIdAndUpdate(id, { name: 'jason bourne' }
+  UserModel.findByIdAndUpdate(_id, updatedUser,{new:true})
+  .populate({
+    path: 'location',
+    model: 'location'
+  })
+
     .then((savedUser) => {
       savedUser.passwordHash = "***";
       req.session.loggedInUser = savedUser;
