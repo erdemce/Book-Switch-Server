@@ -22,7 +22,7 @@ app.use(session({
       maxAge: 1000*60*60*24*7// is in milliseconds.  expiring in 7 day
     },
     store: new MongoStore({
-      mongoUrl: process.env.MONGODB_URI || "mongodb://localhost/bookSwitch",
+      mongoUrl:process.env.MONGODB_URI,
       ttl: 60*60*24*7, // is in seconds. expiring in 7 day
     })
 }));
