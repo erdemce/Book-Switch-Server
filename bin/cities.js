@@ -304,6 +304,18 @@ let data=[
     lat: "46.0500",
     lng: "14.5167",
     country: "Slovenia"
+    },
+    {
+        city: "Versailles", 
+        lat: "48.8053", 
+        lng: "2.1350", 
+        country: "France", 
+    }, 
+    {
+        city: "Amsterdam",
+        lat: "52.3779", 
+        lng: "4.8970", 
+        country: "Netherland",
     }
     ]
 
