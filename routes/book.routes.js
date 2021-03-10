@@ -1,8 +1,10 @@
 
+const axios = require('axios');
 const express = require('express')
 const router = express.Router()
 
 const BookModel = require('../models/Book.model');
+
 
 const isUserBook=(req,res,next)=>{
   let user = req.session.loggedInUser
@@ -191,6 +193,25 @@ router.delete('/delete/:id',isLoggedIn,isUserBook, (req, res, next) => {
         err
       });
     })
+})
+
+router.get("/search/:title?/:author?",(req, res, next) => {
+  let title = req.params.title;
+  let author=(req.params.author)? req.params.author:"";
+  let search=(title)?title.split(" ").join("+"):""  
+    search=(author)?search+"+inauthor:"+author.split(" ").join("+"):search
+    console.log(search)
+  
+  axios
+       .get(process.env.GOOGLE_BOOK_API_URL+search+"&key="+process.env.GOOGLE_BOOK_API_KEY)
+        .then((response) => {
+          res.status(200).json(response.data.items) 
+        })
+        .catch((err) => {
+          res.status(500).json({
+            errorMessage: 'Something went wrong!',
+          });
+})
 })
 
 module.exports = router;
