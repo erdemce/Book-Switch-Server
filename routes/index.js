@@ -19,7 +19,7 @@ router.use("/location", locationRoutes);
 const messageRoutes = require("./message.routes");
 router.use("/message", messageRoutes);
 
-const cloudinaryRoutes = require("./routes/cloudinary.routes");
-router.use("/api", cloudinaryRoutes);
+const cloudinaryRoutes = require("./cloudinary.routes");
+router.use("/cloudinary", cloudinaryRoutes);
 
 module.exports = router;
