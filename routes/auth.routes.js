@@ -37,21 +37,28 @@ router.post('/signup', (req, res) => {
     let hash = bcrypt.hashSync(password, salt);
     UserModel.create({username, email, location, name,lastName, passwordHash: hash})
       .then((userData) => {
+        UserModel.findById(userData._id)
+    .populate({
+      path: 'location',
+      model: 'location',
+      select:`city`
+    })
+      .then((userData) => {
         
         
         userData.passwordHash = "***";
         req.session.loggedInUser = userData;
         res.status(200).json(userData)
-      })
+      })})
       .catch((err) => {
         if (err.code === 11000) {
-          res.status(501).json({
+          res.status(500).json({
             errorMessage: 'Email entered already exist!',
             message: err,
           });
         } 
         else {
-          res.status(502).json({
+          res.status(500).json({
             errorMessage: 'Something went wrong!',
             message: err,
           });
@@ -78,7 +85,8 @@ router.post('/login', (req, res) => {
     UserModel.findOne({email})
     .populate({
       path: 'location',
-      model: 'location'
+      model: 'location',
+      select:`city`
     })
       .then((userData) => {
            
@@ -146,7 +154,7 @@ router.post('/user',isLoggedIn , (req, res) => {
 
   console.log(req.body)
 
-  const {username, name, lastName, location, _id} = req.body;
+  const {username, name, lastName, photo, location, _id} = req.body;
 
   if(user._id!==_id){
     res.status(401).json({
@@ -163,7 +171,7 @@ router.post('/user',isLoggedIn , (req, res) => {
       });
     return;  
 }
-  let updatedUser= {username,name,lastName,location}
+  let updatedUser= {username,name,lastName,location,photo}
   UserModel.findByIdAndUpdate(_id, updatedUser,{new:true})
   .populate({
     path: 'location',

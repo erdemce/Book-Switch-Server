@@ -106,15 +106,17 @@ router.get("/get/:id", (req, res, next) => {
 
   if(bookId==="random"){
     BookModel.find()
-  .populate({
-    path: 'owner',
-    populate: {
-      path: "owner.location",
-      model:"location"
+    .populate({
+      path: 'owner',
+      model: `user`,
+      select: `username name lastName location`,
+      populate: {
+        path:`location`,
+        model: `location`,
+        select: `city`
+      }
       
-    }
-  
-  })
+    })
     .then((allBooks) => {
       let index=Math.floor(Math.random()*allBooks.length)
       res.status(200).json(allBooks[index]) 
@@ -147,8 +149,14 @@ router.get('/', (req, res, next) => {
   BookModel.find()
   .populate({
     path: 'owner',
-    model:"user",
-    select: "username location"
+    model: `user`,
+    select: `username name lastName location`,
+    populate: {
+      path:`location`,
+      model: `location`,
+      select: `city`
+    }
+    
   })
     .then((allBooks) => {
       res.status(200).json(allBooks) 
@@ -165,11 +173,13 @@ router.get('/user/:id', (req, res, next) => {
   BookModel.find({owner:userId})
   .populate({
     path: 'owner',
-    model:"user",
-    select: "username location",
+    model: `user`,
+    select: `username name lastName location`,
     populate: {
-      path: 'location',
-      model:"location"}
+      path:`location`,
+      model: `location`,
+      select: `city`
+    }
   })
     .then((allBooks) => {
       res.status(200).json(allBooks) 
