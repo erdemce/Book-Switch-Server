@@ -22,7 +22,7 @@ const isUserBook=(req,res,next)=>{
     })
     .catch((err) => {
       res.status(500).json({
-        errorMessage: 'Something went wrong!',
+        message: 'Something went wrong!',
       });
     })
 }
@@ -46,8 +46,7 @@ router.post('/add',isLoggedIn, (req, res) => {
     if (!title || !author || !language || !description ||!category||!switchMode) {
         res.status(500)
           .json({
-            errorMessage: 'Please fill all the required fields',
-            body:request.body
+            message: 'Please fill all the required fields'
           });
         return;  
     }
@@ -68,7 +67,7 @@ router.post('/add',isLoggedIn, (req, res) => {
       })
       .catch((err) => {
           res.status(500).json({
-            errorMessage: 'Something went wrong!',
+            message: 'Something went wrong!'
           });
         })
 });
@@ -79,17 +78,16 @@ router.post('/edit/:id',isLoggedIn,isUserBook, (req, res) => {
   let bookId = req.params.id;
   console.log(req.body)
 
-  const {title, author, language, description,category,switchMode} = req.body;
+  const {title, author, language, description,category,switchMode,photo} = req.body;
   if (!title || !author || !language || !description ||!category||!switchMode) {
     res.status(500)
       .json({
-        errorMessage: 'Please fill all the required fields',
-        body:request.body
+        message: 'Please fill all the required fields',
       });
     return;  
 }
   let updatedBook= {
-    title, author, language, description,category,switchMode,
+    title, author, language, description,category,switchMode,photo,
     owner: user._id,
   }
   BookModel.findByIdAndUpdate(bookId, updatedBook)
@@ -97,8 +95,11 @@ router.post('/edit/:id',isLoggedIn,isUserBook, (req, res) => {
       res.status(200).json(bookData)
     })
     .catch(() => {
-      res.render('not-authorised.hbs')
-    })
+      res.status(500)
+      .json({
+        message: 'Something went wrong, please try again',
+      });
+})
 })
 
 router.get("/get/:id", (req, res, next) => {
@@ -138,7 +139,7 @@ router.get("/get/:id", (req, res, next) => {
     })
     .catch((err) => {
       res.status(500).json({
-        errorMessage: 'Something went wrong!',
+        message: 'Something went wrong!',
       });
     })
     }
@@ -163,7 +164,7 @@ router.get('/', (req, res, next) => {
     })
     .catch((err) => {
       res.status(500).json({
-        errorMessage: 'Something went wrong!',
+        message: 'Something went wrong!',
       });
     })
 });
@@ -186,7 +187,7 @@ router.get('/user/:id', (req, res, next) => {
     })
     .catch((err) => {
       res.status(500).json({
-        errorMessage: 'Something went wrong!',
+        message: 'Something went wrong!',
       });
     })
 });
@@ -199,7 +200,7 @@ router.delete('/delete/:id',isLoggedIn,isUserBook, (req, res, next) => {
     })
     .catch((err) => {
       res.status(500).json({
-        errorMessage: 'Something went wrong!',
+        message: 'Something went wrong!',
         err
       });
     })
@@ -219,7 +220,7 @@ router.get("/search/:title?/:author?",(req, res, next) => {
         })
         .catch((err) => {
           res.status(500).json({
-            errorMessage: 'Something went wrong!',
+            message: 'Something went wrong!',
           });
 })
 })

@@ -22,7 +22,7 @@ const bookSchema = new Schema({
   language: {
     type: String,
     require:true,
-    ENUM: ["Chinese","Dutch","English", "French", "German","Italian","Japanese", "Portuguese","Russian","Spanish","Turkish"],
+    ENUM: ["Chinese","Dutch","English", "French", "German","Italian","Japanese", "Portuguese","Russian","Spanish","Turkish","Other"],
   },
 
   description: {

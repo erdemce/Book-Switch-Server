@@ -14,21 +14,21 @@ router.post('/signup', (req, res) => {
     if (!username || !email || !password || !location) {
         res.status(500)
           .json({
-            errorMessage: 'Please enter username, email, city and password',
+            message: 'Please enter username, email, city and password',
           });
         return;  
     }
     const myRegex = new RegExp(/^[a-z0-9](?!.*?[^\na-z0-9]{2})[^\s@]+@[^\s@]+\.[^\s@]+[a-z0-9]$/);
     if (!myRegex.test(email)) {
         res.status(500).json({
-          errorMessage: 'Email format not correct',
+          message: 'Email format not correct',
         });
         return;  
     }
     const myPassRegex = new RegExp(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/);
     if (!myPassRegex.test(password)) {
       res.status(500).json({
-        errorMessage: 'Password needs to have 8 characters, a number and an Uppercase alphabet'          
+        message: 'Password needs to have 8 characters, a number and an Uppercase alphabet'          
       });
       return;  
     }
@@ -53,14 +53,12 @@ router.post('/signup', (req, res) => {
       .catch((err) => {
         if (err.code === 11000) {
           res.status(500).json({
-            errorMessage: 'Email entered already exist!',
-            message: err,
+            message: 'Email entered already exist!',
           });
         } 
         else {
           res.status(500).json({
-            errorMessage: 'Something went wrong!',
-            message: err,
+            message: 'Something went wrong!',
           });
         }
       })
@@ -70,14 +68,14 @@ router.post('/login', (req, res) => {
     
     if ( !email || !password) {
         res.status(500).json({
-            error: 'Please enter your email and password',
+            message: 'Please enter your email and password',
        })
       return;  
     }
     const myRegex = new RegExp(/^[a-z0-9](?!.*?[^\na-z0-9]{2})[^\s@]+@[^\s@]+\.[^\s@]+[a-z0-9]$/);
     if (!myRegex.test(email)) {
         res.status(500).json({
-            error: 'Email format not correct',
+          message: 'Email format not correct',
         })
         return;  
     }
@@ -102,22 +100,21 @@ router.post('/login', (req, res) => {
                 
                 else {
                     res.status(500).json({
-                        error: 'Password doesn\'t match',
+                      message: 'Password doesn\'t match',
                     })
                   return; 
                 }
             })
             .catch(() => {
                 res.status(500).json({
-                    error: 'Email format not correct',
+                  message: 'Email format not correct',
                 })
               return; 
             });
       })
       .catch((err) => {
         res.status(500).json({
-            error: 'Email does not exist',
-            message: err
+          message: 'Email does not exist',
         })
         return;  
       });
@@ -136,7 +133,6 @@ const isLoggedIn = (req, res, next) => {
   else {
       res.status(401).json({
           message: 'Unauthorized user',
-          code: 401,
       })
   };
 };
@@ -159,15 +155,13 @@ router.post('/user',isLoggedIn , (req, res) => {
   if(user._id!==_id){
     res.status(401).json({
       message: 'Unauthorized user',
-      code: 401,
   })
 
   }
   if (!username||!location) {
     res.status(500)
       .json({
-        errorMessage: 'Please fill all the required fields',
-        body:request.body
+        message: 'Please fill all the required fields',
       });
     return;  
 }
@@ -184,8 +178,10 @@ router.post('/user',isLoggedIn , (req, res) => {
       res.status(200).json(savedUser)
     })
     .catch(() => {
-      res.render('not-authorised.hbs')
-    })
+      res.status(500)
+      .json({
+        message: 'Something went Wrong!',
+      });})
 })
 
 module.exports = router;
